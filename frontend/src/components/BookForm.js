@@ -28,7 +28,7 @@ function BookForm() {
     if (isEdit) {
       fetchBook();
     }
-  }, [isEdit, id]);
+  }, [fetchBook]);
 
   const fetchBook = async () => {
     try {
