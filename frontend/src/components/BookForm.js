@@ -8,6 +8,7 @@ import {
   Typography,
   Paper,
   Grid,
+  Alert,
 } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -16,6 +17,7 @@ function BookForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -28,14 +30,16 @@ function BookForm() {
     if (isEdit) {
       fetchBook();
     }
-  }, [fetchBook]);
+  }, [isEdit, id]);
 
   const fetchBook = async () => {
     try {
       const response = await axios.get(`${API_URL}/books/${id}`);
       setFormData(response.data);
+      setError(null);
     } catch (error) {
       console.error('Error fetching book:', error);
+      setError('Failed to fetch book details. Please try again.');
     }
   };
 
@@ -48,6 +52,7 @@ function BookForm() {
   };
 
   const handleSubmit = async (e) => {
+    console.log("entered here");
     e.preventDefault();
     try {
       if (isEdit) {
@@ -58,6 +63,7 @@ function BookForm() {
       navigate('/');
     } catch (error) {
       console.error('Error saving book:', error);
+      setError('Failed to save book. Please try again.');
     }
   };
 
@@ -66,6 +72,11 @@ function BookForm() {
       <Typography variant="h4" component="h1" gutterBottom>
         {isEdit ? 'Edit Book' : 'Add New Book'}
       </Typography>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Paper sx={{ p: 3 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
